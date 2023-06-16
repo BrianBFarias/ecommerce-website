@@ -1,0 +1,105 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div id="product-layout">
+    <div id="item-page">
+        <div class="box">
+            <img src="{{ item.image }}" class="full-image" alt="Image">
+        </div>
+        <div class="box">
+        <div class="item-text">
+            <h3 class="product-title"> {{item}}</h3>
+            <p class="item-description">{{item.description}}</p>
+            <p> Listed on: {{item.time}} </p>
+            <p>Current value: ${{item.price}}</p>
+    
+            {% if item.closed is False %}
+            <div id="bid-box">
+            <form action="{% url 'bid' item.id %}" method="post">
+                {% csrf_token %}
+                <input type="number" placeholder="$" name="price">
+                <Button type="submit">Place Bid</Button>
+            </form>
+            </div>
+            {% endif %}
+    
+            {% if item.closed is True %}
+            <div>
+                <strong>Sold to <a href="">{{last_bidder}}</a></strong>
+            </div>
+            {% endif %}
+    
+            <div class="error">
+                {% if item_name == item.title %}
+                {% if valid %}
+                    <h4>{{valid}}</h4>
+                {% endif %}
+    
+                {% if invalid %}
+                    <h5>{{invalid}}</h5>
+                {% endif %}
+                {% endif %}
+            </div>
+    
+            {% if in_watchlist is False %}
+            <form action="{% url 'add_watchlist' item.id %}" class="watchlist">
+                <Button type="submit" value="Add to Watchlist +"> Add to Watchlist + </Button>
+            </form>
+            {% endif %}
+    
+            {% if in_watchlist is True %}
+            <form action="{% url 'remove' item.id %}" class="watchlist">
+                <Button type="submit" value="remove from  Watchlist +"> Remove from Watchlist - </Button>
+            </form>
+            {% endif %}
+    
+            {% if owner is True %}
+                {% if item.closed is False %}
+                <form action="{% url 'close' item.id %}" class="end-listing">
+                    <Button type="submit" value="close"> End Listing </Button>
+                </form>
+                {% endif %}
+            {% endif %}
+    
+            <div class="Details">
+                <strong>Details: </strong>
+                <p>Listed on: {{item.time}} by <a href="">{{item.poster}}</a></p>
+                
+                <p>Category: <a href="{% url 'chosen_category' item.category %}">{{item.category}}</a></p>
+            </div>    
+        </div>
+        </div>
+    </div>
+    
+    <div id="comments-area">
+        <div class="message-submition">
+            <form action="{% url 'comment' item.id %}" method="post" class="message">
+                {% csrf_token %}
+                <textarea type="input" name="comment" placeholder="Post comment"></textarea>
+                <button type="submit"> Send </button>
+            </form>
+        </div>
+        <div id="comment-section">
+            {% for message in messages%}
+            <div id="section">
+                {% if item.poster == message.user %}
+                <div class="info">
+                    <strong class="owner-poster-comment">{{message.user}}</strong> <p>(Owner)</p>: {{message.message}}
+                </div>
+                <div class="time">
+                    {{message.time}}
+                </div>
+                {% elif item.poster != message.user %}
+                <div class="info">
+                    <strong class="poster-comment">{{message.user}}</strong>: {{message.message}}
+                </div>
+                <div class="time">
+                    {{message.time}}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
