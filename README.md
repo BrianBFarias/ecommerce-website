@@ -16,11 +16,9 @@ django-admin startproject PROJECT
 <h6> Any modifictions to .models.py will usually require a database update </h6>
 
 ```
+python manage.py makemigrations
 python manage.py migrate
 
-OR 
-
-python manage.py makemigrations
 ```
 
 ## Preview
